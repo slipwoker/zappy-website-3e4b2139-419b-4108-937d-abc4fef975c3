@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>שיטה — צליל התנועה - כשאותיות הופכות למילים</title>
+    <meta name="description" content="שיטה | צליל התנועה - כשאותיות הופכות למילים. ספרוני קריאה לכיתה א">
+    <meta name="keywords" content="שיטה, ספרוני קריאה לכיתה א, שיטת קריאה הדרגתית לילדים, ספרי ראשית קריאה לפי ניקוד, ספרי קריאה">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Zappy Analytics -->
+<script>
+(function() {
+  'use strict';
+  
+  // Configuration
+  var config = {
+    websiteId: '3e4b2139-419b-4108-937d-abc4fef975c3',
+    apiUrl: 'https://api.zappy5.com/api/analytics/track',
+    sessionDuration: 30 * 60 * 1000, // 30 minutes
+    visitorDuration: 30 * 24 * 60 * 60 * 1000, // 30 days
+    trackPageViews: true,
+    trackClicks: true,
+    trackFormSubmissions: true
+  };
+  
+  // Generate or retrieve persistent visitor ID (30 days)
+  function getVisitorId() {
+    var visitorKey = 'zappy_visitor_' + config.websiteId;
+    var visitor = null;
+    
+    try {
+      visitor = localStorage.getItem(visitorKey);
+      if (visitor) {
+        var visitorData = JSON.parse(visitor);
+        var now = Date.now();
+        
+        // Check if visitor ID is still valid (30 days)
+        if (now - visitorData.created < config.visitorDuration) {
+          // Update last seen timestamp
+          visitorData.lastSeen = now;
+          localStorage.setItem(visitorKey, JSON.stringify(visitorData));
+          return visitorData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: LocalStorage not available');
+    }
+    
+    // Generate new visitor ID
+    var newVisitorId = 'zv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      localStorage.setItem(visitorKey, JSON.stringify({
+        id: newVisitorId,
+        created: Date.now(),
+        lastSeen: Date.now()
+      }));
+    } catch (e) {
+      // Continue without local storage
+    }
+    
+    return newVisitorId;
+  }
+  
+  // Generate or retrieve session ID (30 minutes)
+  function getSessionId() {
+    var sessionKey = 'zappy_session_' + config.websiteId;
+    var session = null;
+    
+    try {
+      session = sessionStorage.getItem(sessionKey);
+      if (session) {
+        var sessionData = JSON.parse(session);
+        var now = Date.now();
+        
+        // Check if session is still valid
+        if (now - sessionData.timestamp < config.sessionDuration) {
+          // Update timestamp
+          sessionData.timestamp = now;
+          sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
+          return sessionData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: SessionStorage not available');
+    }
+    
+    // Generate new session ID
+    var newSessionId = 'zs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+        id: newSessionId,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      // Continue without session storage
+    }
+    
+    return newSessionId;
+  }
+  
+  var visitorId = getVisitorId();
+  var sessionId = getSessionId();
+  
+  // Track an event
+  function trackEvent(eventType, data) {
+    data = data || {};
+    
+    var eventData = {
+      website_id: config.websiteId,
+      event_type: eventType,
+      page_path: window.location.pathname,
+      referrer: document.referrer || 'direct',
+      visitor_id: visitorId,
+      session_id: sessionId,
+      metadata: data
+    };
+    
+    // Use sendBeacon if available (better for page unload events)
+    if (navigator.sendBeacon) {
+      var blob = new Blob([JSON.stringify(eventData)], { type: 'application/json' });
+      navigator.sendBeacon(config.apiUrl, blob);
+    } else {
+      // Fallback to fetch
+      fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData),
+        keepalive: true
+      }).catch(function(error) {
+        console.warn('Zappy Analytics: Failed to track event', error);
+      });
+    }
+  }
+  
+  // Track page view
+  if (config.trackPageViews) {
+    trackEvent('pageview', {
+      title: document.title,
+      url: window.location.href
+    });
+  }
+  
+  // Track clicks on important elements
+  if (config.trackClicks) {
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      
+      // Track button clicks (counted as actions)
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        var button = target.tagName === 'BUTTON' ? target : target.closest('button');
+        trackEvent('click', {
+          element: 'button',
+          text: button.textContent.trim().substring(0, 100),
+          id: button.id || null,
+          class: button.className || null
+        });
+      }
+      
+      // Track link clicks (navigation - not counted as actions)
+      else if (target.tagName === 'A' || target.closest('a')) {
+        var link = target.tagName === 'A' ? target : target.closest('a');
+        trackEvent('navigation', {
+          element: 'link',
+          text: link.textContent.trim().substring(0, 100),
+          href: link.href,
+          external: link.hostname !== window.location.hostname
+        });
+      }
+    }, true);
+  }
+  
+  // Track form submissions
+  if (config.trackFormSubmissions) {
+    document.addEventListener('submit', function(e) {
+      var form = e.target;
+      
+      trackEvent('form_submit', {
+        form_id: form.id || null,
+        form_name: form.name || null,
+        form_action: form.action || null,
+        form_method: form.method || 'GET'
+      });
+    }, true);
+  }
+  
+  // Track time on page (send on page unload)
+  var pageLoadTime = Date.now();
+  
+  window.addEventListener('beforeunload', function() {
+    var timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000); // in seconds
+    
+    trackEvent('page_unload', {
+      time_on_page: timeOnPage,
+      page_path: window.location.pathname
+    });
+  });
+  
+  // Expose tracking function globally for custom events
+  window.zappyAnalytics = {
+    track: trackEvent,
+    getVisitorId: function() { return visitorId; },
+    getSessionId: function() { return sessionId; }
+  };
+  
+})();
+</script>
+<!-- End Zappy Analytics -->
+    <meta property="og:title" content="שיטה — צליל התנועה - כשאותיות הופכות למילים">
+    <meta property="og:description" content="שיטה | צליל התנועה - כשאותיות הופכות למילים. ספרוני קריאה לכיתה א">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="שיטה — צליל התנועה - כשאותיות הופכות למילים">
+    <meta name="twitter:description" content="שיטה | צליל התנועה - כשאותיות הופכות למילים. ספרוני קריאה לכיתה א">
+    <meta property="og:type" content="website">
+  <meta property="og:locale" content="he_IL">
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Cookie Consent -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
+    <!-- Mickidum Accessibility Toolbar -->
+    <script src="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+
+    <style id="zappy-dropdown-submenu-styles">
+      /* ========== DESKTOP DROPDOWN SUBMENU STYLES ========== */
+      /* Base styles for dropdown submenus - parent must be positioned */
+      .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { position: relative; }
+      /* Submenu base - hidden by default */
+      .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { display: block !important; position: absolute !important; top: 100%; left: 0; min-width: 220px; background: white; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); padding: 8px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.3s ease; z-index: 1000; list-style: none; pointer-events: none; }
+      /* CRITICAL: Desktop hover styles to show dropdown */
+      .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Submenu item styling */
+      .sub-menu li { list-style: none; margin: 0; padding: 0; }
+      .sub-menu a { display: block !important; padding: 10px 16px !important; color: var(--text-dark, #333) !important; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 0.2s; }
+      .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+      [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 10px !important; padding-right: 28px !important; }
+      .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+      .sub-menu a:hover { background-color: #f5f5f5; }
+      /* RTL (Hebrew/Arabic) dropdown positioning */
+      [dir="rtl"] .nav-menu .sub-menu, [dir="rtl"] nav .sub-menu, [dir="rtl"] .navbar .sub-menu, html[lang="he"] .nav-menu .sub-menu, html[lang="he"] nav .sub-menu, html[lang="he"] .navbar .sub-menu, html[lang="ar"] .nav-menu .sub-menu, html[lang="ar"] nav .sub-menu, html[lang="ar"] .navbar .sub-menu { left: auto !important; right: 0 !important; }
+      /* Hide empty dropdown menus (exclude catalog sub-menus that use <a> children instead of <li>) */
+      .sub-menu:empty, .sub-menu:not(:has(li:not(.zappy-hidden-menu-item))):not(:has(> a)), .sub-menu:not(:has(li)):not(:has(> a)) { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+      /* Desktop: show submenu on Menu Group hover */
+      li:has(.menu-group-title):hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Menu Group title styling */
+      .nav-menu > li > .menu-group-title, #navMenu > li > .menu-group-title { display: inline-block; padding: 0.5rem 1rem; cursor: default; user-select: none; }
+      
+      /* ========== MOBILE SUBMENU STYLES ========== */
+      @media (max-width: 768px) {
+        .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { position: static !important; transform: none !important; box-shadow: none !important; background: transparent !important; max-height: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; padding: 0 !important; border-radius: 0 !important; }
+        .navbar .sub-menu.mobile-expanded, .nav-menu .sub-menu.mobile-expanded, #navMenu .sub-menu.mobile-expanded { max-height: none !important; overflow-y: visible !important; opacity: 1 !important; visibility: visible !important; padding: 8px 0 8px 16px !important; }
+        [dir="rtl"] .sub-menu.mobile-expanded, html[lang="he"] .sub-menu.mobile-expanded { padding: 8px 16px 8px 0 !important; }
+        /* Disable hover behavior on mobile */
+        .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 0; visibility: hidden; pointer-events: none; }
+        .nav-menu li > .sub-menu.mobile-expanded, nav li > .sub-menu.mobile-expanded, .navbar li > .sub-menu.mobile-expanded, #navMenu li > .sub-menu.mobile-expanded { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+        .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; position: relative !important; min-height: 44px !important; }
+        .nav-menu li:has(.sub-menu) > a, nav li:has(.sub-menu) > a, .navbar li:has(.sub-menu) > a, #navMenu li:has(.sub-menu) > a { flex: 1 !important; min-width: 0 !important; }
+        .nav-menu li:has(.sub-menu) > .menu-group-title, nav li:has(.sub-menu) > .menu-group-title, .navbar li:has(.sub-menu) > .menu-group-title, #navMenu li:has(.sub-menu) > .menu-group-title { flex: 1 !important; min-width: 0 !important; padding: 0 !important; line-height: inherit !important; }
+        .nav-menu li:has(.sub-menu) > .sub-menu, nav li:has(.sub-menu) > .sub-menu, .navbar li:has(.sub-menu) > .sub-menu, #navMenu li:has(.sub-menu) > .sub-menu { flex-basis: 100% !important; width: 100% !important; }
+        .nav-menu li:has(.sub-menu) > a [class*="chevron"], .nav-menu li:has(.sub-menu) > a [class*="arrow"], .nav-menu li:has(.sub-menu) > a .fa-chevron-down, .nav-menu li:has(.sub-menu) > a .fa-angle-down, nav li:has(.sub-menu) > a [class*="chevron"], nav li:has(.sub-menu) > a [class*="arrow"], #navMenu li:has(.sub-menu) > a [class*="chevron"], #navMenu li:has(.sub-menu) > a [class*="arrow"] { display: none !important; visibility: hidden !important; }
+        .mobile-submenu-toggle { display: flex !important; align-items: center !important; justify-content: center !important; width: 44px !important; height: auto !important; background: transparent !important; border: none !important; cursor: pointer !important; color: var(--text-dark) !important; position: static !important; flex-shrink: 0 !important; align-self: stretch !important; z-index: 2 !important; padding: 0 !important; margin: 0 !important; }
+        .mobile-submenu-toggle::after { content: '' !important; width: 0 !important; height: 0 !important; border-left: 6px solid transparent !important; border-right: 6px solid transparent !important; border-top: 7px solid currentColor !important; transition: transform 0.3s ease !important; }
+        .mobile-submenu-toggle.expanded::after { transform: rotate(180deg) !important; }
+        .sub-menu a { padding: 10px 0 !important; display: block !important; color: var(--text-dark) !important; white-space: normal !important; }
+        .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+        [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 0 !important; padding-right: 28px !important; }
+        .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+        .nav-menu.active, #navMenu.active { max-width: 100vw !important; overflow-x: hidden !important; box-sizing: border-box !important; }
+        .navbar .sub-menu li a, nav.navbar .sub-menu li a, .zappy-products-dropdown .sub-menu a { color: var(--text-dark) !important; }
+      }
+      @media (min-width: 769px) { .mobile-submenu-toggle { display: none !important; } }
+    </style>
+
+    <style id="mobile-lang-menu-deployed-css">
+    @media (max-width: 768px) {
+      .lang-switcher,
+      .nav-cta-container .lang-switcher,
+      .nav-container .lang-switcher,
+      .navbar .lang-switcher,
+      .navbar .nav-cta-container .lang-switcher,
+      .nav-icons-left .lang-switcher,
+      .nav-ecommerce-icons .lang-switcher { display: none !important; }
+      .mobile-lang-menu { width: 100%; border-top: 1px solid rgba(128,128,128,0.2); padding: 8px 0 0 0; margin-top: 8px; }
+      .mobile-lang-toggle { display: flex !important; align-items: center; justify-content: space-between; width: 100%; padding: 12px 16px; background: none; border: none; cursor: pointer; font-size: 15px; color: inherit; font-family: inherit; }
+      .mobile-lang-toggle::after { content: ''; display: inline-block; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform 0.3s ease; margin-left: 8px; }
+      .mobile-lang-toggle.expanded::after { transform: rotate(-135deg); }
+      .mobile-lang-options { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+      .mobile-lang-options.expanded { max-height: 300px; }
+      .mobile-lang-option { display: flex !important; align-items: center; gap: 10px; padding: 10px 24px; text-decoration: none; color: inherit; font-size: 14px; font-family: inherit; }
+      .mobile-lang-option:hover { background: rgba(128,128,128,0.1); }
+      .mobile-lang-option.active { font-weight: 600; opacity: 0.7; pointer-events: none; }
+      .mobile-lang-option img { width: 20px; height: 20px; border-radius: 50%; }
+    }
+    @media (min-width: 769px) {
+      .mobile-lang-menu { display: none !important; }
+    }
+    </style>
+
+    <style id="zappy-widget-visibility">
+      #mic-access-tool-general-button, .mic-access-tool-general-button,
+      #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+      ._access-icon, #mic-access-tool-box, .mic-access-tool-box,
+      #mic-init-access-tool #mic-access-tool-box, div[id*="mic-access-tool-box"], ._access-menu {
+        display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
+      }
+    </style>
+</head>
+<body>
+
+
+    <div class="mobile-search-panel" id="mobile-search-panel">
+      <div class="search-wrapper">
+        <input type="text" id="mobile-search-input" placeholder="חיפוש מוצרים..." autocomplete="off">
+        <button class="search-submit" id="mobile-search-submit" title="חיפוש">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+        </button>
+        <button class="close-search" id="close-mobile-search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="search-results" id="mobile-search-results"></div>
+    </div>
+  
+<script>window.ZAPPY_WEBSITE_ID = "3e4b2139-419b-4108-937d-abc4fef975c3";window.ZAPPY_API_BASE = (window.location.pathname.includes('/preview') ? "https://api.zappy5.com" : "https://api.zappy5.com");</script>
+  <nav class="navbar" dir="rtl">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+    <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+    <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" style="display: none;">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </button>
+
+  <button class="phone-header-btn" data-phone="" aria-label="Call">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  </button>
+
+  <div class="nav-container">
+    <div class="nav-right-group"><div class="nav-brand">
+      <a href="/" class="logo-link">
+        <img src="/assets/logo.webp" alt="צליל התנועה - כשאותיות הופכות למילים" class="logo">
+      </a>
+    </div><ul class="nav-menu" id="navMenu">
+
+    <li class="menu-item-has-children zappy-products-dropdown">
+      <a href="/products">
+        מוצרים
+        <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6"></path>
+        </svg>
+      </a>
+      <ul class="sub-menu" id="zappy-nav-category-links">
+        <li><a href="/products">כל המוצרים</a></li>
+        <!-- Categories will be loaded dynamically -->
+      </ul>
+    </li>
+  <li><a href="/method">שיטה</a></li><li><a href="/about">אודות</a></li><li><a href="/contact">צור קשר</a></li></ul><div class="nav-ecommerce-icons nav-icons-left"><a href="/login" class="login-link nav-login" title="התחברות"><svg class="login-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a><a href="#cart" class="cart-link nav-cart" id="cart-drawer-toggle" title="עגלת קניות"><svg class="cart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span class="cart-count">0</span></a><div class="nav-search-box">
+    <input type="text" class="nav-search-input" id="nav-search-input" placeholder="חיפוש מוצרים..." autocomplete="off">
+    <button class="nav-search-btn" id="nav-search-btn" title="חיפוש">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+    </button>
+    <div class="nav-search-results" id="nav-search-results"></div>
+  </div></div><div class="nav-ecommerce-icons nav-icons-right"><button class="nav-search-toggle" id="mobile-search-toggle" title="חיפוש"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg></button></div></div>
+
+    
+
+    
+  </div>
+</nav>
+
+    <nav class="zappy-catalog-menu rtl" id="zappy-catalog-menu" dir="rtl" style="display:none">
+      <div class="catalog-menu-container">
+        <a href="/products" class="catalog-menu-item catalog-menu-all">כל המוצרים</a>
+        <div class="catalog-menu-categories" id="zappy-category-links">
+          <!-- Categories will be loaded dynamically -->
+        </div>
+      </div>
+    </nav>
+  
+<script>
+
+// Navbar Mobile Menu Toggle and Contrast Fix
+(function() {
+  // Use 'load' event instead of 'DOMContentLoaded' to ensure we run AFTER all other scripts
+  window.addEventListener('load', function() {
+    
+    // FIX MOBILE BUTTON CONTRAST
+    // Detect navbar background color and apply contrasting color to mobile buttons
+    const navbar = document.querySelector('.navbar, nav, header');
+    if (!navbar) {
+      console.log('[Navbar] Navbar element not found');
+      return;
+    }
+    
+    // DECLARE VARIABLES EARLY to avoid Temporal Dead Zone errors
+    // These are used in multiple places below
+    let mobileToggle = document.getElementById('mobileToggle') ||
+                       document.querySelector('.mobile-toggle') ||
+                       document.querySelector('.hamburger') ||
+                       document.querySelector('.hamburger-menu') ||
+                       document.querySelector('.menu-toggle') ||
+                       document.querySelector('.burger-menu') ||
+                       document.querySelector('[aria-label="Menu"]') ||
+                       document.querySelector('[aria-label="תפריט"]');
+    
+    const phoneBtn = document.querySelector('.phone-header-btn');
+    
+    const computedStyle = window.getComputedStyle(navbar);
+    let bgColor = computedStyle.backgroundColor;
+    
+    console.log('[Navbar] Initial navbar background:', bgColor);
+    
+    // Check if background is transparent or rgba with 0 alpha
+    const isTransparent = bgColor === 'transparent' || 
+                         bgColor === 'rgba(0, 0, 0, 0)' ||
+                         (bgColor.startsWith('rgba') && bgColor.includes(', 0)'));
+    
+    if (isTransparent) {
+      // Check for background-image or gradient
+      const bgImage = computedStyle.backgroundImage;
+      if (bgImage && bgImage !== 'none') {
+        console.log('[Navbar] Navbar has background image/gradient, using dark text');
+        bgColor = 'rgb(240, 240, 240)'; // Assume light background
+      } else {
+        // Transparent navbar - check body background
+        const bodyBg = window.getComputedStyle(document.body).backgroundColor;
+        console.log('[Navbar] Navbar transparent, using body background:', bodyBg);
+        bgColor = bodyBg;
+      }
+    }
+    
+    // Calculate luminance to determine if background is light or dark
+    const rgb = bgColor.match(/\d+/g);
+    if (rgb && rgb.length >= 3) {
+      const r = parseInt(rgb[0]);
+      const g = parseInt(rgb[1]);
+      const b = parseInt(rgb[2]);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      
+      // Mobile button colors are set by Claude's AI-generated CSS (same as .nav-menu a)
+      // No dynamic color overrides needed - colors come from the generated navbar CSS
+      console.log('[Navbar] Mobile button colors preserved from Claude CSS (luminance:', luminance.toFixed(2) + ')');
+      
+      // FIX ICON SIZES - Ensure SVGs are properly sized and visible
+      // INJECT CRITICAL CSS TO OVERRIDE ANY CONFLICTING RULES
+      const criticalCSS = document.createElement('style');
+      criticalCSS.id = 'zappy-mobile-nav-fix';
+      const htmlLang = document.documentElement.lang || 'en';
+      const htmlDir = document.documentElement.dir || 'ltr';
+      // Check both dir attribute AND lang for RTL detection
+      // dir="rtl" is the most reliable indicator
+      const isRTL = htmlDir === 'rtl' || htmlLang === 'he' || htmlLang === 'ar';
+      
+      criticalCSS.textContent = `
+        /* Hide mobile buttons on desktop, show only on mobile */
+        @media (min-width: 769px) {
+          .mobile-toggle,
+          .phone-header-btn {
+            display: none !important;
+          }
+        }
+        
+        /* Show and position mobile buttons correctly on mobile */
+        @media (max-width: 768px) {
+          .mobile-toggle,
+          .phone-header-btn {
+            position: absolute !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 1001 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            cursor: pointer !important;
+            padding: 6px !important;
+            background: none !important;
+            color: var(--nav-text, var(--text-dark)) !important;
+          }
+          
+          /* LTR positioning (default): hamburger LEFT, phone RIGHT */
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .mobile-toggle,
+          html[dir="ltr"] .mobile-toggle {
+            left: 12px !important;
+            right: auto !important;
+          }
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .phone-header-btn,
+          html[dir="ltr"] .phone-header-btn {
+            right: 12px !important;
+            left: auto !important;
+          }
+          
+          /* RTL positioning: hamburger RIGHT, phone LEFT */
+          html[dir="rtl"] .mobile-toggle,
+          html[lang="he"] .mobile-toggle,
+          html[lang="ar"] .mobile-toggle {
+            right: 12px !important;
+            left: auto !important;
+          }
+          html[dir="rtl"] .phone-header-btn,
+          html[lang="he"] .phone-header-btn,
+          html[lang="ar"] .phone-header-btn {
+            left: 12px !important;
+            right: auto !important;
+          }
+          
+          /* CRITICAL: Ensure nav-container has min-height on mobile */
+          /* All children are positioned absolutely/fixed on mobile, so height:auto collapses to 0 */
+          .nav-container {
+            min-height: 70px !important;
+            position: relative !important;
+          }
+          
+          /* Ensure SVG icons are properly sized and inherit color */
+          .mobile-toggle svg,
+          .phone-header-btn svg {
+            width: 24px !important;
+            height: 24px !important;
+            /* Don't force display - let JavaScript control hamburger/close toggle */
+          }
+          
+          /* Reset nav-cta-container on mobile - remove desktop box-shadow/padding */
+          /* that creates a visible ghost box when CTA button is hidden */
+          .nav-cta-container {
+            box-shadow: none !important;
+            padding: 0 !important;
+          }
+          
+          /* Hide nav-cta-container entirely on mobile when there's no lang-switcher */
+          /* (only the CTA button is inside, and it's hidden on mobile) */
+          .nav-cta-container:not(:has(.lang-switcher)) {
+            display: none !important;
+          }
+          
+          /* CRITICAL: Prevent hero image fade gradient from bleeding over headline text */
+          /* The .image-fade-gradient has bottom: -30px (extends below parent) */
+          /* On mobile stacked layout, this overlaps the h1 text below the image */
+          .hero-image-column {
+            overflow: hidden !important;
+          }
+          .image-fade-gradient {
+            bottom: 0 !important;
+          }
+          
+          /* Hide desktop language switcher on mobile - hamburger menu handles it */
+          /* High specificity to override stored CSS */
+          .lang-switcher,
+          .nav-cta-container .lang-switcher,
+          .nav-container .lang-switcher,
+          .navbar .lang-switcher,
+          .navbar .nav-cta-container .lang-switcher {
+            display: none !important;
+          }
+        }
+      `;
+      
+      // Remove existing fix if present and inject new one
+      const existing = document.getElementById('zappy-mobile-nav-fix');
+      if (existing) existing.remove();
+      document.head.appendChild(criticalCSS);
+      
+      console.log('[Navbar] Critical CSS injected for mobile nav positioning');
+      
+      // ONLY apply inline positioning styles on mobile viewport
+      // On desktop, the CSS handles hiding these buttons with display: none
+      // Inline styles were breaking desktop layout by overriding CSS
+      const isMobileViewport = window.innerWidth <= 768;
+      
+      if (mobileToggle) {
+        // Icon sizing applies to all viewports for consistency
+        const hamburgerIcon = mobileToggle.querySelector('.hamburger-icon');
+        const closeIcon = mobileToggle.querySelector('.close-icon');
+        
+        if (hamburgerIcon) {
+          hamburgerIcon.style.setProperty('width', '24px', 'important');
+          hamburgerIcon.style.setProperty('height', '24px', 'important');
+          hamburgerIcon.style.setProperty('display', 'block', 'important'); // Show hamburger by default
+        }
+        if (closeIcon) {
+          closeIcon.style.setProperty('width', '24px', 'important');
+          closeIcon.style.setProperty('height', '24px', 'important');
+          closeIcon.style.setProperty('display', 'none', 'important'); // Hide close icon by default
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          mobileToggle.style.setProperty('position', 'absolute', 'important');
+          mobileToggle.style.setProperty('top', '50%', 'important');
+          mobileToggle.style.setProperty('transform', 'translateY(-50%)', 'important');
+          mobileToggle.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          
+          console.log('[Navbar] Mobile toggle positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          mobileToggle.style.removeProperty('position');
+          mobileToggle.style.removeProperty('top');
+          mobileToggle.style.removeProperty('transform');
+          mobileToggle.style.removeProperty('z-index');
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared mobile toggle inline positioning');
+        }
+      }
+      
+      if (phoneBtn) {
+        // Icon sizing applies to all viewports
+        const phoneIcon = phoneBtn.querySelector('svg');
+        if (phoneIcon) {
+          phoneIcon.style.width = '24px';
+          phoneIcon.style.height = '24px';
+          phoneIcon.setAttribute('width', '24');
+          phoneIcon.setAttribute('height', '24');
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          phoneBtn.style.setProperty('position', 'absolute', 'important');
+          phoneBtn.style.setProperty('top', '50%', 'important');
+          phoneBtn.style.setProperty('transform', 'translateY(-50%)', 'important');
+          phoneBtn.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          
+          console.log('[Navbar] Phone button positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          phoneBtn.style.removeProperty('position');
+          phoneBtn.style.removeProperty('top');
+          phoneBtn.style.removeProperty('transform');
+          phoneBtn.style.removeProperty('z-index');
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared phone button inline positioning');
+        }
+      }
+    } else {
+      console.log('[Navbar] Could not parse background color:', bgColor);
+    }
+    
+    // MOBILE MENU TOGGLE
+    // Re-query in case DOM changed (mobileToggle already declared at top of function)
+    mobileToggle = document.getElementById('mobileToggle') ||
+                   document.querySelector('.mobile-toggle') ||
+                   document.querySelector('.hamburger') ||
+                   document.querySelector('.hamburger-menu') ||
+                   document.querySelector('.menu-toggle') ||
+                   document.querySelector('.burger-menu') ||
+                   document.querySelector('[aria-label="Menu"]') ||
+                   document.querySelector('[aria-label="תפריט"]');
+    
+    // EXPANDED SEARCH: Find nav menu by ID or class
+    const navMenu = document.getElementById('navMenu') ||
+                  document.querySelector('.nav-menu') ||
+                  document.querySelector('.nav-links') ||
+                  document.querySelector('nav ul:not(.submenu)');
+    
+    if (!mobileToggle || !navMenu) {
+      console.log('[Navbar] Mobile toggle or menu not found:', { toggle: !!mobileToggle, menu: !!navMenu });
+      return;
+    }
+    
+    // Ensure navMenu has ID for CSS targeting
+    if (!navMenu.id) {
+      navMenu.id = 'navMenu';
+    }
+    
+    console.log('[Navbar] Initializing mobile menu...');
+    
+    // Remove any existing event listeners by cloning the button
+    const newToggle = mobileToggle.cloneNode(true);
+    mobileToggle.parentNode.replaceChild(newToggle, mobileToggle);
+    
+    // Toggle menu on button click - use newToggle now
+    newToggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const hamburgerIcon = this.querySelector('.hamburger-icon');
+      const closeIcon = this.querySelector('.close-icon');
+      const isActive = navMenu.classList.contains('active');
+      
+      if (isActive) {
+        // Close menu
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed');
+      } else {
+        // Open menu
+        navMenu.classList.add('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'none', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'block', 'important');
+        document.body.style.overflow = 'hidden';
+        console.log('[Navbar] Menu opened');
+      }
+    });
+    
+    // Close menu when clicking nav links (but NOT dropdown toggles)
+    const navLinks = navMenu.querySelectorAll('a');
+    navLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        // Don't close if it's a dropdown child (unless it's a real navigation link)
+        if (this.getAttribute('href') === '#') return;
+        
+        const hamburgerIcon = newToggle.querySelector('.hamburger-icon');
+        const closeIcon = newToggle.querySelector('.close-icon');
+        
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed (link clicked)');
+      });
+    });
+    
+    // DROPDOWN MENU TOGGLE (for mobile and touch devices)
+    var dropdownToggles = navMenu.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var parent = this.closest('.nav-dropdown');
+        if (!parent) return;
+        
+        // Close other open dropdowns at the same level
+        var siblings = parent.parentNode.querySelectorAll('.nav-dropdown.open');
+        siblings.forEach(function(sib) {
+          if (sib !== parent) sib.classList.remove('open');
+        });
+        
+        parent.classList.toggle('open');
+        console.log('[Navbar] Dropdown toggled:', parent.classList.contains('open') ? 'open' : 'closed');
+      });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.nav-dropdown')) {
+        var openDropdowns = document.querySelectorAll('.nav-dropdown.open');
+        openDropdowns.forEach(function(dd) { dd.classList.remove('open'); });
+      }
+    });
+    
+    console.log('[Navbar] Dropdown handlers initialized for ' + dropdownToggles.length + ' dropdowns');
+    
+    // Phone button functionality (phoneBtn already declared at top of function)
+    if (phoneBtn) {
+      phoneBtn.addEventListener('click', function() {
+        // Get phone number from placeholder in page or use default
+        const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+        const phoneNumber = phoneLinks.length > 0 
+          ? phoneLinks[0].getAttribute('href').replace('tel:', '')
+          : '[business_phone]';
+        
+        window.location.href = 'tel:' + phoneNumber;
+        console.log('[Navbar] Phone button clicked');
+      });
+    }
+    
+    console.log('[Navbar] Mobile menu initialized successfully');
+    
+    // === WHATSAPP BUTTON VISIBILITY FIX ===
+    // Ensure WhatsApp floating button is hidden on desktop and visible on mobile
+    // IMPORTANT: Only target the floating button by its class, NOT generic wa.me links
+    const handleWhatsAppVisibility = function() {
+      const whatsappBtn = document.querySelector('.whatsapp-float');
+      if (whatsappBtn) {
+        const isDesktop = window.innerWidth >= 769;
+        if (isDesktop) {
+          whatsappBtn.style.setProperty('display', 'none', 'important');
+          whatsappBtn.style.setProperty('visibility', 'hidden', 'important');
+          whatsappBtn.style.setProperty('opacity', '0', 'important');
+          whatsappBtn.style.setProperty('pointer-events', 'none', 'important');
+          console.log('[WhatsApp] Button hidden on desktop');
+        } else {
+          whatsappBtn.style.removeProperty('display');
+          whatsappBtn.style.removeProperty('visibility');
+          whatsappBtn.style.removeProperty('opacity');
+          whatsappBtn.style.removeProperty('pointer-events');
+          console.log('[WhatsApp] Button visible on mobile');
+        }
+      }
+    };
+    
+    // Run on load
+    handleWhatsAppVisibility();
+    
+    // Run on resize with debouncing
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleWhatsAppVisibility, 100);
+    });
+  });
+})();
+
+</script>
+  
+  <main>
+    <section class="method-intro-section" data-layout-spec="שיטה-intro" dir="rtl">
+  <div class="method-intro-container">
+    <div class="method-intro-grid">
+
+      <!-- Content Column (START = RIGHT in RTL) -->
+      <div class="method-intro-content">
+        <div class="method-intro-badge">
+          <span class="badge-dot"></span>
+          <span>שיטת קריאה הדרגתית לפי ניקוד</span>
+        </div>
+        <h1 class="method-intro-h1">כשאותיות הופכות למילים —<br>שלב אחר שלב</h1>
+        <h3 class="method-intro-h3">גישה מובנית ומדורגת לראשית קריאה בעברית</h3>
+        <p class="method-intro-body">ספרוני הקריאה שלנו בנויים על שיטה ייחודית של התקדמות הדרגתית לפי צלילי הניקוד — החל מהצלילים הפשוטים ביותר ועד למילים שלמות ומשפטים קצרים. כל ספרון תוכנן בקפידה להתאים לשלב ההתפתחותי של הילד/ה, ומייצר חוויות הצלחה קטנות שמניעות קדימה. הגישה שלנו מתאימה לתלמידי כיתות א׳ ו-ב׳ וגנים, ומעניקה להורים ולמורים כלי פדגוגי ברור, מהנה ויעיל ל<strong>ספרוני קריאה לכיתה א</strong>.</p>
+
+        <ul class="method-feature-list">
+          <li>
+            <span class="feature-icon">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#F4C95D"></circle><path d="M6 11.5L9.5 15L16 8" stroke="#5E481D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </span>
+            <span>התקדמות לפי צלילי הניקוד — מהפשוט למורכב</span>
+          </li>
+          <li>
+            <span class="feature-icon">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#92C96B"></circle><path d="M6 11.5L9.5 15L16 8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </span>
+            <span>חוויות הצלחה בכל שלב — ביטחון ומוטיבציה לילד</span>
+          </li>
+          <li>
+            <span class="feature-icon">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#76C8F2"></circle><path d="M6 11.5L9.5 15L16 8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </span>
+            <span>מתאים לגנים, כיתות א׳ ו-ב׳ — ולעבודה עצמאית בבית</span>
+          </li>
+          <li>
+            <span class="feature-icon">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#F4C95D"></circle><path d="M6 11.5L9.5 15L16 8" stroke="#5E481D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </span>
+            <span>כלי פדגוגי ברור ונוח למורים ולהורים כאחד</span>
+          </li>
+        </ul>
+
+        <div class="method-intro-cta">
+          <a href="#method-timeline" class="btn-primary method-btn">גלו את שלבי השיטה</a>
+        </div>
+      </div>
+
+      <!-- Image Column (END = LEFT in RTL) -->
+      <div class="method-intro-image-col">
+        <div class="method-image-card">
+          <div class="method-image-frame">
+            <img data-placeholder="method-intro-image-1" data-context="A bright, warm, flat-lay photograph of a set of small Hebrew reading booklets (ספרוני קריאה) arranged in a gentle staircase/progression layout on a soft cream-colored surface. Each booklet has a colorful illustrated cover with Hebrew text and vowel marks (nikud). The books are for kindergarten and first-grade children. The scene feels organized, joyful, and educational — like a teacher has carefully laid them out. Warm natural light, pastel tones, storybook aesthetic." width="560" height="420" src="/assets/site-method-intro-image-1.webp" alt="ספרוני ראשית קריאה בשיטה הדרגתית לפי ניקוד">
+          </div>
+
+          <!-- Floating progression diagram -->
+          <div class="method-progression-badge">
+            <div class="progression-inner">
+              <span class="progression-label">שלבי ההתקדמות</span>
+              <div class="progression-steps">
+                <div class="prog-step prog-step-1">
+                  <span class="prog-dot"></span>
+                  <span class="prog-text">פתח</span>
+                </div>
+                <div class="prog-arrow">
+                  <svg data-no-icon-edit="true" aria-hidden="true" width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M13 5H1M1 5L5 1M1 5L5 9" stroke="#6F6A63" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </div>
+                <div class="prog-step prog-step-2">
+                  <span class="prog-dot"></span>
+                  <span class="prog-text">קמץ</span>
+                </div>
+                <div class="prog-arrow">
+                  <svg data-no-icon-edit="true" aria-hidden="true" width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M13 5H1M1 5L5 1M1 5L5 9" stroke="#6F6A63" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </div>
+                <div class="prog-step prog-step-3">
+                  <span class="prog-dot"></span>
+                  <span class="prog-text">חירק</span>
+                </div>
+                <div class="prog-arrow">
+                  <svg data-no-icon-edit="true" aria-hidden="true" width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M13 5H1M1 5L5 1M1 5L5 9" stroke="#6F6A63" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </div>
+                <div class="prog-step prog-step-4">
+                  <span class="prog-dot"></span>
+                  <span class="prog-text">שורוק</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Decorative accent dot -->
+          <div class="method-accent-dot" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom stepped divider -->
+  <div class="method-intro-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,90 L0,55 L200,55 L200,40 L450,40 L450,28 L700,28 L700,40 L950,40 L950,55 L1200,55 L1200,90 Z" fill="#FFF9F1" opacity="0.6"></path>
+      <path d="M0,90 L0,65 L300,65 L300,50 L600,50 L600,65 L900,65 L900,50 L1200,50 L1200,90 Z" fill="#FFF9F1" opacity="0.7"></path>
+      <path d="M0,90 L0,72 L400,72 L400,62 L800,62 L800,72 L1200,72 L1200,90 Z" fill="#FFF9F1"></path>
+    </svg>
+  </div>
+</section>
+
+<section class="method-timeline-section" data-layout-spec="שיטה-timeline" dir="rtl">
+  <div class="method-timeline-container">
+
+    <!-- Section Header -->
+    <div class="method-timeline-header">
+      <span class="method-timeline-badge">המסלול שלנו</span>
+      <h2 class="method-timeline-title">מסע הקריאה — צעד אחר צעד</h2>
+      <p class="method-timeline-subtitle">שיטת הקריאה ההדרגתית שלנו בנויה על חמישה שלבים מובנים, המובילים כל ילד מהיכרות עם צלילי הניקוד ועד לשטף קריאה עצמאי — בביטחון ובשמחה.</p>
+    </div>
+
+    <!-- Timeline Track -->
+    <div class="method-timeline-track">
+
+      <!-- Central line -->
+      <div class="method-timeline-line" aria-hidden="true"></div>
+
+      <!-- Step 1 - offset start -->
+      <div class="method-timeline-step step-offset-start">
+        <div class="method-timeline-node">
+          <div class="method-timeline-icon-wrap icon-primary">
+            <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="16" cy="16" r="10"></circle>
+              <path d="M12 16 Q16 10 20 16 Q16 22 12 16Z" fill="currentColor" stroke="none"></path>
+            </svg>
+          </div>
+          <div class="method-timeline-dot" aria-hidden="true"></div>
+        </div>
+        <div class="method-timeline-card card-default">
+          <div class="method-timeline-step-number">01</div>
+          <h3 class="method-timeline-card-title">מודעות לצלילים</h3>
+          <p class="method-timeline-card-text">הילד לומד להקשיב לצלילים הבסיסיים של השפה — להבחין בין עיצורים ותנועות, ולזהות את הצליל של כל ניקוד. זהו הבסיס שעליו כל שאר הלמידה נבנית.</p>
+          <div class="method-timeline-tag">שלב א׳</div>
+        </div>
+      </div>
+
+      <!-- Step 2 - offset end -->
+      <div class="method-timeline-step step-offset-end">
+        <div class="method-timeline-node">
+          <div class="method-timeline-icon-wrap icon-secondary">
+            <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="6" y="8" width="20" height="16" rx="3"></rect>
+              <path d="M10 13h12M10 17h8"></path>
+            </svg>
+          </div>
+          <div class="method-timeline-dot" aria-hidden="true"></div>
+        </div>
+        <div class="method-timeline-card card-default">
+          <div class="method-timeline-step-number">02</div>
+          <h3 class="method-timeline-card-title">פענוח מבוקר</h3>
+          <p class="method-timeline-card-text">עם ידע הצלילים ביד, הילד מתחיל לפענח מילים קצרות בצורה מבוקרת ומדורגת. הספרונים בנויים כך שכל מילה חדשה מגיעה בזמן הנכון — לא מוקדם ולא מאוחר מדי.</p>
+          <div class="method-timeline-tag">שלב ב׳</div>
+        </div>
+      </div>
+
+      <!-- Step 3 - offset start -->
+      <div class="method-timeline-step step-offset-start">
+        <div class="method-timeline-node">
+          <div class="method-timeline-icon-wrap icon-accent">
+            <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 16 L14 22 L24 10"></path>
+              <circle cx="16" cy="16" r="12"></circle>
+            </svg>
+          </div>
+          <div class="method-timeline-dot" aria-hidden="true"></div>
+        </div>
+        <div class="method-timeline-card card-default">
+          <div class="method-timeline-step-number">03</div>
+          <h3 class="method-timeline-card-title">קריאה חוזרת ומוטמעת</h3>
+          <p class="method-timeline-card-text">חזרה על טקסטים מוכרים מחזקת את הזיכרון הפונטי ובונה ביטחון. כל ספרון מלווה בפעילויות חזרה שהופכות את הקריאה לחוויה שמחה ולא משימה מלחיצה.</p>
+          <div class="method-timeline-tag">שלב ג׳</div>
+        </div>
+      </div>
+
+      <!-- Step 4 - offset end -->
+      <div class="method-timeline-step step-offset-end">
+        <div class="method-timeline-node">
+          <div class="method-timeline-icon-wrap icon-primary">
+            <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 20 Q10 10 16 14 Q22 18 26 8"></path>
+              <circle cx="26" cy="8" r="2.5" fill="currentColor" stroke="none"></circle>
+            </svg>
+          </div>
+          <div class="method-timeline-dot" aria-hidden="true"></div>
+        </div>
+        <div class="method-timeline-card card-default">
+          <div class="method-timeline-step-number">04</div>
+          <h3 class="method-timeline-card-title">זיהוי עצמאי של מילים</h3>
+          <p class="method-timeline-card-text">הילד מתחיל לזהות מילים שלמות ממבט ראשון — ללא פענוח אות-אות. שלב זה הוא ציון הדרך המרגש שבו הקריאה הופכת מאוטומטית ושוטפת יותר.</p>
+          <div class="method-timeline-tag">שלב ד׳</div>
+        </div>
+      </div>
+
+      <!-- Step 5 - offset start -->
+      <div class="method-timeline-step step-offset-start step-final">
+        <div class="method-timeline-node">
+          <div class="method-timeline-icon-wrap icon-star">
+            <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M16 4 L19.5 12.5 L29 13.5 L22 20 L24 29 L16 24.5 L8 29 L10 20 L3 13.5 L12.5 12.5 Z" fill="currentColor" stroke="none"></path>
+            </svg>
+          </div>
+          <div class="method-timeline-dot dot-final" aria-hidden="true"></div>
+        </div>
+        <div class="method-timeline-card card-default card-final">
+          <div class="method-timeline-step-number step-num-final">05</div>
+          <h3 class="method-timeline-card-title">שטף קריאה בטקסטים קצרים</h3>
+          <p class="method-timeline-card-text">השלב המסכם: הילד קורא משפטים קצרים ברצף, עם הבנה ושמחה. זהו הרגע שבו ספרי ראשית קריאה לפי ניקוד הופכים לחוויה אמיתית של גילוי עולם הקריאה.</p>
+          <div class="method-timeline-tag tag-final">🎉 יעד הסיום</div>
+        </div>
+      </div>
+
+    </div><!-- end track -->
+
+    <!-- Image accent -->
+    <div class="method-timeline-image-wrap">
+      <img data-placeholder="method-timeline-image-1" data-context="A warm illustrated scene of a young Israeli child (age 5-7) sitting at a colorful classroom desk, happily reading a small Hebrew booklet with nikud (vowel marks). The booklet is open and the child is pointing at the text with a big smile. Soft pastel classroom background with educational posters. Storybook illustration style, warm golden and sky-blue tones, cheerful and inviting." width="520" height="360" src="/assets/site-method-timeline-image-1.webp" alt="ילד קורא ספרון ראשית קריאה בעברית עם ניקוד" class="method-timeline-img">
+      <div class="method-timeline-img-badge">✨ שיטת קריאה הדרגתית לילדים</div>
+    </div>
+
+  </div><!-- end container -->
+
+  <!-- Bottom arch divider -->
+  <div class="method-timeline-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 L0,55 Q300,10 600,30 Q900,50 1200,20 L1200,80 Z" fill="#FFFDF9"></path>
+    </svg>
+  </div>
+
+</section>
+
+<section class="method-capabilities-section" data-layout-spec="שיטה-capabilities" dir="rtl">
+  <div class="method-capabilities-container">
+    <div class="method-capabilities-intro">
+      <span class="method-capabilities-eyebrow">מה הילדים שלכם רוכשים</span>
+      <h2 class="method-capabilities-title">יכולות שנבנות שלב אחר שלב</h2>
+      <p class="method-capabilities-lead">ספרוני קריאה לכיתה א׳ שלנו מבוססים על שיטת קריאה הדרגתית לפי צלילי הניקוד — כל ספרון מוסיף שכבה חדשה של ידע ומחזק את מה שנלמד קודם. הילד מתקדם בביטחון, המורה ממשיכה בזרימה, וההורה רואה תוצאות.</p>
+    </div>
+
+    <div class="method-capabilities-grid">
+
+      <article class="method-cap-col">
+        <div class="method-cap-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="18" cy="18" r="14"></circle>
+            <path d="M12 18 Q15 13 18 18 Q21 23 24 18"></path>
+            <circle cx="18" cy="10" r="1.5" fill="currentColor" stroke="none"></circle>
+          </svg>
+        </div>
+        <h3 class="method-cap-title">מודעות פונמית עמוקה</h3>
+        <p class="method-cap-desc">הילד לומד לזהות ולהפריד צלילים בתוך מילים — לא רק לזכור צורות אותיות. כל ספרון מציג ניקוד חדש בהקשר של מילים אמיתיות, כך שהאוזן והעין עובדות יחד ומייצרות הבנה פונמית אמיתית.</p>
+        <ul class="method-cap-list">
+          <li>זיהוי צלילי ניקוד בבידוד ובהקשר</li>
+          <li>הבחנה בין תנועות דומות</li>
+          <li>חיבור בין שמיעה לקריאה</li>
+        </ul>
+      </article>
+
+      <article class="method-cap-col">
+        <div class="method-cap-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="6" y="8" width="24" height="20" rx="3"></rect>
+            <path d="M6 14 h24"></path>
+            <path d="M12 8 v-3"></path>
+            <path d="M24 8 v-3"></path>
+            <path d="M11 20 h4"></path>
+            <path d="M11 24 h8"></path>
+          </svg>
+        </div>
+        <h3 class="method-cap-title">פענוח הדרגתי ומובנה</h3>
+        <p class="method-cap-desc">שיטת הקריאה ההדרגתית לפי ניקוד מבטיחה שכל ספרון מציג רק את מה שהילד כבר מוכן לקרוא. הרצף המחושב מונע עומס קוגניטיבי ומאפשר הצלחה בכל עמוד — הצלחה שמזמינה להמשיך.</p>
+        <ul class="method-cap-list">
+          <li>התקדמות לפי סדר ניקוד מוגדר</li>
+          <li>מילון מילים מבוקר לכל שלב</li>
+          <li>חזרה מובנית על חומר קודם</li>
+        </ul>
+      </article>
+
+      <article class="method-cap-col">
+        <div class="method-cap-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 l2.5 7.5 h7.5 l-6 4.5 2.5 7.5 -7-5 -7 5 2.5-7.5 -6-4.5 h7.5 Z"></path>
+          </svg>
+        </div>
+        <h3 class="method-cap-title">ביטחון עצמי וגאוות קריאה</h3>
+        <p class="method-cap-desc">כשילד מסיים ספרון שלם בכוחות עצמו, הוא חווה הצלחה אמיתית. ספרי הקריאה שלנו מתוכננים כך שכל ילד ירגיש מסוגל — לא מתוסכל. הביטחון שנבנה בספרון אחד נושא אותו לבא אחריו.</p>
+        <ul class="method-cap-list">
+          <li>קריאה עצמאית מהיום הראשון</li>
+          <li>תחושת הישג ממשית בכל ספרון</li>
+          <li>מוטיבציה פנימית להמשיך לקרוא</li>
+        </ul>
+      </article>
+
+      <article class="method-cap-col">
+        <div class="method-cap-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 28 L8 12 Q8 8 12 8 h12 q4 0 4 4 v16"></path>
+            <path d="M5 28 h26"></path>
+            <path d="M14 8 v5"></path>
+            <path d="M22 8 v5"></path>
+            <path d="M13 18 h10"></path>
+            <path d="M13 22 h7"></path>
+          </svg>
+        </div>
+        <h3 class="method-cap-title">רציפות פדגוגית לאורך השנה</h3>
+        <p class="method-cap-desc">הסדרה בנויה כמערכת שלמה — לא כספרים בודדים. המורה יכולה לשלב את הספרונים בתכנית השנתית בצורה חלקה, לדעת בדיוק איפה כל ילד עומד ולהמשיך בלי לחזור על עצמה. אידיאלי לכיתות א׳-ב׳ ולגנים.</p>
+        <ul class="method-cap-list">
+          <li>תואם תכנית הלימודים הרשמית</li>
+          <li>מדדי התקדמות ברורים למורה</li>
+          <li>מעבר חלק בין ספרוני הסדרה</li>
+        </ul>
+      </article>
+
+      <article class="method-cap-col">
+        <div class="method-cap-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="18" cy="12" r="5"></circle>
+            <path d="M9 28 c0-6 18-6 18 0"></path>
+            <path d="M27 16 c3 1 5 3 5 6"></path>
+            <path d="M9 16 c-3 1 -5 3 -5 6"></path>
+            <circle cx="28" cy="11" r="3"></circle>
+            <circle cx="8" cy="11" r="3"></circle>
+          </svg>
+        </div>
+        <h3 class="method-cap-title">תרגול עצמאי בבית</h3>
+        <p class="method-cap-desc">הספרונים מתוכננים לשימוש גם בלי מורה — ילד יכול לשבת עם הורה ולקרוא בעצמו. הפורמט הידידותי, הכתב הגדול והמשפטים הקצרים מזמינים תרגול יומיומי שמחזק את ההרגל ומשפר את הרמה בצורה טבעית.</p>
+        <ul class="method-cap-list">
+          <li>מתאים לקריאה עצמאית בבית</li>
+            <li>כתב ברור ומרווח לעיניים קטנות</li>
+          <li>בונה הרגל קריאה יומיומי</li>
+        </ul>
+      </article>
+
+      <article class="method-cap-col">
+        <div class="method-cap-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10 10 Q18 6 26 10 v14 Q18 28 10 24 Z"></path>
+            <path d="M18 10 v18"></path>
+            <path d="M14 13 Q16 12 18 13"></path>
+            <path d="M14 18 Q16 17 18 18"></path>
+            <path d="M22 13 Q20 12 18 13"></path>
+            <path d="M22 18 Q20 17 18 18"></path>
+          </svg>
+        </div>
+        <h3 class="method-cap-title">העשרת אוצר מילים בעברית</h3>
+        <p class="method-cap-desc">כל ספרון מציג מילים חדשות בהקשר סיפורי מהנה — לא רשימות יבשות. הילד לא רק לומד לפצח מילים, הוא גם מרחיב את עולמו הלשוני. ספרי ראשית קריאה לפי ניקוד שמכניסים את הילד לתוך עולם עשיר של שפה חיה.</p>
+        <ul class="method-cap-list">
+          <li>מילים בהקשר סיפורי אמיתי</li>
+          <li>הרחבה טבעית של אוצר מילים</li>
+          <li>חיבור בין קריאה להבנת הנקרא</li>
+        </ul>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="method-capabilities-divider-wrapper" aria-hidden="true">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,72 L0,38 Q30,32 60,38 Q80,42 100,36 Q115,31 130,37 Q155,44 180,36 Q200,30 225,36 Q245,42 270,35 Q295,28 320,36 Q340,42 365,35 Q390,28 415,36 Q435,43 460,36 Q480,30 505,37 Q525,43 550,36 Q575,29 600,37 Q620,43 645,36 Q668,30 692,37 Q712,43 738,36 Q762,29 788,37 Q808,43 832,36 Q856,30 880,37 Q900,43 924,36 Q948,30 972,37 Q992,43 1016,36 Q1040,29 1065,37 Q1085,43 1110,36 Q1135,30 1160,37 Q1180,42 1200,38 L1200,72 Z" fill="#FFFDF9"></path>
+      <g fill="#92C96B" opacity="0.55">
+        <ellipse cx="95" cy="33" rx="5" ry="3" transform="rotate(-20,95,33)"></ellipse>
+        <ellipse cx="97" cy="30" rx="3.5" ry="2" transform="rotate(15,97,30)"></ellipse>
+        <ellipse cx="310" cy="32" rx="5" ry="3" transform="rotate(-15,310,32)"></ellipse>
+        <ellipse cx="313" cy="29" rx="3.5" ry="2" transform="rotate(20,313,29)"></ellipse>
+        <ellipse cx="600" cy="33" rx="5" ry="3" transform="rotate(-18,600,33)"></ellipse>
+        <ellipse cx="603" cy="30" rx="3.5" ry="2" transform="rotate(12,603,30)"></ellipse>
+        <ellipse cx="890" cy="33" rx="5" ry="3" transform="rotate(-22,890,33)"></ellipse>
+        <ellipse cx="893" cy="30" rx="3.5" ry="2" transform="rotate(18,893,30)"></ellipse>
+        <ellipse cx="1110" cy="32" rx="5" ry="3" transform="rotate(-15,1110,32)"></ellipse>
+        <ellipse cx="1113" cy="29" rx="3.5" ry="2" transform="rotate(20,1113,29)"></ellipse>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<section class="method-classroom-showcase-section" data-layout-spec="שיטה-classroom-showcase" dir="rtl">
+  <div class="mcs-container">
+    <div class="mcs-header">
+      <span class="mcs-eyebrow">חומרי הלמידה בפעולה</span>
+      <h2 class="mcs-title">ספרוני קריאה לכיתה א׳ — כפי שנראים בכיתה האמיתית</h2>
+      <p class="mcs-subtitle">איכות הדפסה מרגישה ביד, עיצוב ידידותי למתחילים, ושיטת קריאה הדרגתית לפי צלילי הניקוד — הכל בתוך חוברת אחת קטנה ועוצמתית.</p>
+    </div>
+
+    <div class="mcs-grid">
+      <!-- Large tile - START side (right in RTL) -->
+      <figure class="mcs-tile mcs-tile--large">
+        <div class="mcs-img-wrap">
+          <img data-placeholder="method-classroom-showcase-image-1" data-context="A warm, softly lit overhead photograph of an open Hebrew beginner reading booklet spread on a light wooden desk, showing colorful illustrated pages with large Hebrew letters and nikud (vowel marks), surrounded by a few colored pencils and a small eraser, premium catalog quality, cozy classroom atmosphere, natural daylight" width="600" height="750" src="/assets/site-method-classroom-showcase-image-1.webp" alt="חוברת ראשית קריאה פתוחה על שולחן עץ בכיתה">
+        </div>
+        <figcaption class="mcs-caption">
+          <span class="mcs-caption-tag">פנים החוברת</span>
+          <span class="mcs-caption-text">עמודים מאוירים עם אותיות גדולות וניקוד ברור — מותאמים בדיוק לקצב הלמידה של כל ילד</span>
+        </figcaption>
+      </figure>
+
+      <!-- Three smaller tiles - END side (left in RTL) -->
+      <div class="mcs-tiles-stack">
+        <figure class="mcs-tile mcs-tile--small">
+          <div class="mcs-img-wrap">
+            <img data-placeholder="method-classroom-showcase-image-2" data-context="A close-up photograph of a teacher guiding a young kindergarten or first-grade child through a Hebrew reading booklet, the teacher pointing gently at a word on the page, warm classroom lighting, wooden table, encouraging and nurturing atmosphere, soft educational setting" width="560" height="320" src="/assets/site-method-classroom-showcase-image-2.webp" alt="מורה מלווה ילד בקריאה מתוך חוברת ראשית קריאה">
+          </div>
+          <figcaption class="mcs-caption">
+            <span class="mcs-caption-tag">ליווי מורה</span>
+            <span class="mcs-caption-text">שיטת קריאה הדרגתית לילדים שמאפשרת ליווי אישי ומדויק</span>
+          </figcaption>
+        </figure>
+
+        <figure class="mcs-tile mcs-tile--small">
+          <div class="mcs-img-wrap">
+            <img data-placeholder="method-classroom-showcase-image-3" data-context="A neatly arranged flat-lay photograph of a complete set of Hebrew beginner reading booklets, showing colorful covers in a series, arranged in a fan or stacked display on a clean light wooden surface, soft natural lighting, premium educational product photography, warm tones" width="560" height="320" src="/assets/site-method-classroom-showcase-image-3.webp" alt="סדרת ספרי קריאה — כריכות החוברות מסודרות על שולחן">
+          </div>
+          <figcaption class="mcs-caption">
+            <span class="mcs-caption-tag">סדרת החוברות</span>
+            <span class="mcs-caption-text">ספרי ראשית קריאה לפי ניקוד — כל חוברת שלב, כל שלב הצלחה</span>
+          </figcaption>
+        </figure>
+
+        <figure class="mcs-tile mcs-tile--small">
+          <div class="mcs-img-wrap">
+            <img data-placeholder="method-classroom-showcase-image-4" data-context="A cozy study corner photograph showing a young child sitting independently at a small wooden table, reading a colorful Hebrew booklet, a tidy bookshelf with educational materials in the background, warm afternoon light, calm and focused learning atmosphere, inviting and child-friendly" width="560" height="320" src="/assets/site-method-classroom-showcase-image-4.webp" alt="פינת קריאה עצמאית — ילד קורא חוברת לבד בפינת הלמידה">
+          </div>
+          <figcaption class="mcs-caption">
+            <span class="mcs-caption-tag">קריאה עצמאית</span>
+            <span class="mcs-caption-text">מהרגע הראשון — הילד קורא לבד ומרגיש את ההצלחה</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stitched paper-strip bottom divider -->
+  <div class="mcs-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Paper strip fill -->
+      <path d="M0,72 L0,28 Q30,18 60,26 T120,22 Q150,28 180,20 T240,24 Q270,18 300,26 T360,20 Q390,26 420,18 T480,24 Q510,20 540,28 T600,22 Q630,18 660,26 T720,20 Q750,26 780,18 T840,24 Q870,20 900,28 T960,22 Q990,18 1020,26 T1080,20 Q1110,26 1140,18 T1200,24 Q1230,20 1260,28 T1320,22 Q1360,18 1400,26 T1440,22 L1440,72 Z" fill="#FFFDF9"></path>
+      <!-- Stitched dashed line -->
+      <path d="M0,30 Q30,20 60,28 T120,24 Q150,30 180,22 T240,26 Q270,20 300,28 T360,22 Q390,28 420,20 T480,26 Q510,22 540,30 T600,24 Q630,20 660,28 T720,22 Q750,28 780,20 T840,26 Q870,22 900,30 T960,24 Q990,20 1020,28 T1080,22 Q1110,28 1140,20 T1200,26 Q1230,22 1260,30 T1320,24 Q1360,20 1400,28 T1440,24" fill="#FFFDF9" stroke="rgba(201,176,137,0.7)" stroke-width="1.5" stroke-dasharray="8 6"></path>
+    </svg>
+  </div>
+</section>
+
+<section class="method-faq-section" data-layout-spec="שיטה-faq" dir="rtl">
+  <div class="method-faq-container">
+    <div class="method-faq-header">
+      <span class="method-faq-eyebrow">שאלות נפוצות</span>
+      <h2 class="method-faq-title">כל מה שרציתם לדעת על ספרוני הקריאה</h2>
+      <p class="method-faq-subtitle">מכינים את הילד לקריאה עצמאית — שלב אחר שלב, צליל אחר צליל</p>
+    </div>
+    <div class="method-faq-grid">
+
+      <article class="method-faq-item">
+        <h3 class="method-faq-question">
+          <span class="method-faq-q-icon" aria-hidden="true">?</span>
+          מאיזה גיל מתאים להתחיל עם ספרוני הקריאה?
+        </h3>
+        <p class="method-faq-answer">הספרונים מתאימים לילדים מגיל גן חובה ועד כיתה ב׳. הם תוכננו במיוחד עבור ילדים שנמצאים בתחילת דרכם בקריאה — בין אם הם עדיין בגן ומתחילים להכיר אותיות, ובין אם הם בכיתה א׳ ומתחילים לקרוא מילים ראשונות. ניתן להתחיל בכל שלב — הסדרה בנויה כך שכל ילד מוצא את נקודת הכניסה המתאימה לו.</p>
+      </article>
+
+      <article class="method-faq-item">
+        <h3 class="method-faq-question">
+          <span class="method-faq-q-icon" aria-hidden="true">?</span>
+          מה הופך את שיטת הקריאה ההדרגתית לפי ניקוד לשונה?
+        </h3>
+        <p class="method-faq-answer">שיטת הקריאה ההדרגתית לפי צלילי הניקוד בונה את הביטחון של הילד בצורה מדורגת ומחושבת. כל ספרון מציג תנועה חדשה אחת — ורק לאחר שהילד שולט בה לחלוטין, הסדרה מתקדמת לשלב הבא. כך נמנעים עומס וכישלון, ומאפשרים לכל ילד לחוות הצלחה בכל שלב.</p>
+      </article>
+
+      <article class="method-faq-item">
+        <h3 class="method-faq-question">
+          <span class="method-faq-q-icon" aria-hidden="true">?</span>
+          האם הילד צריך לדעת לקרוא לפני שמתחילים?
+        </h3>
+        <p class="method-faq-answer">לא! הספרונים הראשונים בסדרה מיועדים לילדים שמכירים את האותיות אך עדיין לא קוראים. הם מתחילים מהצליל הפשוט ביותר ומתקדמים בהדרגה. גם ילד שמתקשה בקריאה או שעדיין לא התחיל — ימצא בספרונים הראשונים נקודת פתיחה נוחה, בטוחה ומעודדת.</p>
+      </article>
+
+      <article class="method-faq-item">
+        <h3 class="method-faq-question">
+          <span class="method-faq-q-icon" aria-hidden="true">?</span>
+          כמה תמיכה מבוגר נדרשת בזמן הקריאה?
+        </h3>
+        <p class="method-faq-answer">בשלבים הראשונים, מומלץ שמבוגר ישב לצד הילד — לא כדי לקרוא בשבילו, אלא כדי לעודד ולחזק. ככל שהילד מתקדם בסדרה ורוכש ביטחון, הוא הופך עצמאי יותר ויותר. המטרה שלנו היא שבסוף הסדרה הילד יוכל לקחת ספרון, לפתוח ולקרוא לבד — בגאווה.</p>
+      </article>
+
+      <article class="method-faq-item">
+        <h3 class="method-faq-question">
+          <span class="method-faq-q-icon" aria-hidden="true">?</span>
+          האם ניתן להשתמש בספרונים בכיתה ולא רק בבית?
+        </h3>
+        <p class="method-faq-answer">בהחלט! הספרונים תוכננו להיות כלי עבודה הן למורה בכיתה והן להורה בבית. מורות כיתות א׳ ו-ב׳ יכולות לשלב את הספרונים בשיעורי קריאה, בקבוצות קטנות, או כעבודה עצמאית. ההוראות ברורות, הטקסט מדורג, והחומרים מותאמים לשימוש גמיש בכל סביבה חינוכית.</p>
+      </article>
+
+      <article class="method-faq-item">
+        <h3 class="method-faq-question">
+          <span class="method-faq-q-icon" aria-hidden="true">?</span>
+          מה קורה אם הילד תקוע בשלב מסוים?
+        </h3>
+        <p class="method-faq-answer">זה לגמרי נורמלי! הסדרה בנויה כך שניתן לעצור, לחזור, ולחזור על ספרון מסוים כמה פעמים שצריך. אין לחץ להתקדם מהר. אם ילד מתקשה עם תנועה מסוימת, פשוט חוזרים לאותו ספרון ומתרגלים עד שהצליל הופך טבעי ושגור — רק אז ממשיכים הלאה.</p>
+      </article>
+
+      <article class="method-faq-item">
+        <h3 class="method-faq-question">
+          <span class="method-faq-q-icon" aria-hidden="true">?</span>
+          כמה ספרונים יש בסדרה ומה הם מכסים?
+        </h3>
+        <p class="method-faq-answer">הסדרה כוללת מספר ספרוני ראשית קריאה, כל אחד מוקדש לצליל ניקוד אחד — החל מהפתח הפשוט ועד לצלילים המורכבים יותר. כך הילד לומד שיטת קריאה הדרגתית לילדים בצורה מסודרת, ומרגיש שהוא מצליח ומתקדם בכל שלב. בסוף הסדרה הילד מסוגל לקרוא מגוון רחב של מילים ומשפטים.</p>
+      </article>
+
+      <article class="method-faq-item">
+        <h3 class="method-faq-question">
+          <span class="method-faq-q-icon" aria-hidden="true">?</span>
+          האם הספרונים מתאימים לילדים עם קשיי קריאה?
+        </h3>
+        <p class="method-faq-answer">כן — הגישה ההדרגתית והמובנית של הסדרה מתאימה במיוחד לילדים שמתקשים בקריאה. הצעדים הקטנים, החזרתיות, והבהירות של כל שלב מפחיתים חרדה ומגבירים ביטחון. עם זאת, לילדים עם אבחנה של דיסלקציה או קשיים משמעותיים מומלץ להתייעץ עם מאבחן חינוכי לצד השימוש בסדרה.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+  </main>
+  
+  <footer class="site-footer" dir="rtl">
+  <div class="footer-main">
+    <div class="footer-container">
+      <div class="footer-grid">
+
+        <!-- Column 1: Company Info -->
+        <div class="footer-col footer-col--brand">
+          <div class="footer-logo-wrap">
+            <img src="/assets/logo.webp" alt="צליל התנועה - כשאותיות הופכות למילים" class="logo">
+          </div>
+          <p class="footer-tagline">כשאותיות הופכות למילים — שיטה חדשנית ומהנה ללמידת קריאה לילדים.</p>
+          <div class="footer-social">
+            <a href="[facebook_handle]" aria-label="Facebook" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="[instagram_handle]" aria-label="Instagram" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="[whatsapp_handle]" aria-label="WhatsApp" class="social-link"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+
+        <!-- Column 2: Quick Links -->
+        <div class="footer-col">
+          <h3 class="footer-heading"><span class="heading-accent"></span>ניווט מהיר</h3>
+          <ul class="footer-nav">
+            <li><a href="/method">שיטה</a></li>
+            <li><a href="/about">אודות</a></li>
+            <li><a href="/contact">צור קשר</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Contact Info -->
+        <div class="footer-col">
+          <h3 class="footer-heading"><span class="heading-accent"></span>יצירת קשר</h3>
+          <ul class="footer-contact">
+            <li>
+              <span class="contact-icon"><i class="fas fa-envelope"></i></span>
+              <span class="contact-text"><a href="mailto:[business_email]">[business_email]</a></span>
+            </li>
+            <li>
+              <span class="contact-icon"><i class="fas fa-phone"></i></span>
+              <span class="contact-text"><a href="tel:[business_phone]">[business_phone]</a></span>
+            </li>
+            <li><a href="/"><span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span>
+              <span class="contact-text">[business_address]</span></a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Decorative / CTA -->
+        <div class="footer-col footer-col--cta">
+          <div class="footer-cta-card">
+            <div class="cta-icon-row">
+              <span class="cta-emoji">📖</span>
+              <span class="cta-emoji">✏️</span>
+              <span class="cta-emoji">⭐</span>
+            </div>
+            <p class="cta-text">מוכנים להתחיל את מסע הקריאה?</p>
+            <a href="/contact" class="cta-btn">בואו נדבר</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="footer-bottom">
+    <div class="footer-container footer-bottom-inner">
+      <p class="footer-copyright">© 2026 צליל התנועה - כשאותיות הופכות למילים. כל הזכויות שמורות.</p>
+      <div class="footer-legal">
+        <a href="/privacy">מדיניות פרטיות</a>
+        <span class="legal-sep">·</span>
+        <a href="/terms">תנאי שימוש</a><span class="separator">|</span>
+            <a href="/return-policy" aria-label="מדיניות החזרות">
+              מדיניות החזרות
+            </a>
+        <span class="legal-sep">·</span>
+        <a href="/accessibility">נגישות</a>
+        <span class="legal-sep">·</span>
+        <a href="https://zappy5.com" target="_blank" class="zappy-attribution">נוצר באמצעות Zappy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+  
+  <a href="https://wa.me/[whatsapp_handle]" class="whatsapp-float" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  
+  <div data-integration="accessibility:toolbar"></div>
+
+    <script src="/script.js"></script>
+
+    <script id="zappy-mobile-submenu-script">
+    (function() {
+      function initMobileSubmenuToggles() {
+        if (window.innerWidth > 768) {
+          document.querySelectorAll('.mobile-submenu-toggle').forEach(function(btn) { btn.remove(); });
+          document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) { menu.classList.remove('mobile-expanded'); });
+          return;
+        }
+        var items = document.querySelectorAll('.nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu)');
+        items.forEach(function(li) {
+          if (li.querySelector('.mobile-submenu-toggle')) return;
+          var submenu = li.querySelector('.sub-menu');
+          var parentLink = li.querySelector(':scope > a');
+          if (!submenu || !parentLink) return;
+          var toggleBtn = document.createElement('button');
+          toggleBtn.className = 'mobile-submenu-toggle';
+          toggleBtn.setAttribute('aria-label', 'Toggle submenu');
+          toggleBtn.setAttribute('type', 'button');
+          parentLink.insertAdjacentElement('afterend', toggleBtn);
+          toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) {
+              if (menu !== submenu) { menu.classList.remove('mobile-expanded'); var t = menu.parentElement.querySelector('.mobile-submenu-toggle'); if(t) t.classList.remove('expanded'); }
+            });
+            submenu.classList.toggle('mobile-expanded');
+            toggleBtn.classList.toggle('expanded');
+          });
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileSubmenuToggles); }
+      else { initMobileSubmenuToggles(); }
+      var resizeTimer; window.addEventListener('resize', function() { clearTimeout(resizeTimer); resizeTimer = setTimeout(initMobileSubmenuToggles, 250); });
+      // Re-initialize when mobile menu becomes visible (MutationObserver)
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes') {
+            var target = mutation.target;
+            if (target.classList && (target.classList.contains('active') || target.classList.contains('open'))) {
+              setTimeout(initMobileSubmenuToggles, 100);
+            }
+          }
+        });
+      });
+      setTimeout(function() {
+        document.querySelectorAll('.mobile-menu, .nav-menu, #navMenu, nav').forEach(function(menu) {
+          observer.observe(menu, { attributes: true, attributeFilter: ['class', 'style'] });
+        });
+      }, 500);
+    })();
+    </script>
+
+    <script id="zappy-mobile-lang-menu-script">
+    (function() {
+      function initMobileLangMenu() {
+        if (window.innerWidth > 768) {
+          var existingMenu = document.querySelector('.mobile-lang-menu');
+          if (existingMenu) existingMenu.remove();
+          return;
+        }
+        if (document.querySelector('.mobile-lang-menu')) return;
+        var switcher = document.querySelector('.lang-switcher');
+        if (!switcher) return;
+        var dropdown = switcher.querySelector('.lang-switcher-dropdown');
+        if (!dropdown) return;
+        var options = dropdown.querySelectorAll('.lang-option');
+        if (options.length === 0) return;
+        var navMenu = document.getElementById('navMenu') || document.querySelector('.nav-menu') || document.querySelector('nav ul');
+        if (!navMenu) return;
+        var currentLang = document.documentElement.lang || 'en';
+        var langConfigs = {
+          he: {name:'עברית',flag:'https://api.iconify.design/circle-flags/il.svg'},
+          en: {name:'English',flag:'https://api.iconify.design/circle-flags/us.svg'},
+          ar: {name:'العربية',flag:'https://api.iconify.design/circle-flags/sa.svg'},
+          fr: {name:'Français',flag:'https://api.iconify.design/circle-flags/fr.svg'},
+          es: {name:'Español',flag:'https://api.iconify.design/circle-flags/es.svg'},
+          de: {name:'Deutsch',flag:'https://api.iconify.design/circle-flags/de.svg'},
+          ru: {name:'Русский',flag:'https://api.iconify.design/circle-flags/ru.svg'},
+          zh: {name:'中文',flag:'https://api.iconify.design/circle-flags/cn.svg'},
+          ja: {name:'日本語',flag:'https://api.iconify.design/circle-flags/jp.svg'},
+          pt: {name:'Português',flag:'https://api.iconify.design/circle-flags/br.svg'},
+          it: {name:'Italiano',flag:'https://api.iconify.design/circle-flags/it.svg'},
+          ko: {name:'한국어',flag:'https://api.iconify.design/circle-flags/kr.svg'}
+        };
+        var container = document.createElement('div');
+        container.className = 'mobile-lang-menu';
+        var currentConfig = langConfigs[currentLang] || {name:currentLang,flag:''};
+        var toggleBtn = document.createElement('button');
+        toggleBtn.className = 'mobile-lang-toggle';
+        toggleBtn.type = 'button';
+        var currentFlagHtml = currentConfig.flag ? '<img src="' + currentConfig.flag + '" width="20" height="20" alt="" style="border-radius:50%;margin-right:8px;margin-left:8px;">' : '';
+        toggleBtn.innerHTML = currentFlagHtml + currentConfig.name;
+        container.appendChild(toggleBtn);
+        var optionsDiv = document.createElement('div');
+        optionsDiv.className = 'mobile-lang-options';
+        var currentLink = document.createElement('a');
+        currentLink.className = 'mobile-lang-option active';
+        currentLink.href = '#';
+        currentLink.innerHTML = currentFlagHtml + currentConfig.name;
+        optionsDiv.appendChild(currentLink);
+        options.forEach(function(opt) {
+          var link = document.createElement('a');
+          link.className = 'mobile-lang-option';
+          link.href = opt.getAttribute('href');
+          link.innerHTML = opt.innerHTML;
+          optionsDiv.appendChild(link);
+        });
+        container.appendChild(optionsDiv);
+        navMenu.appendChild(container);
+        toggleBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleBtn.classList.toggle('expanded');
+          optionsDiv.classList.toggle('expanded');
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileLangMenu); }
+      else { initMobileLangMenu(); }
+      window.addEventListener('resize', function() { clearTimeout(window._mlrt); window._mlrt = setTimeout(initMobileLangMenu, 250); });
+    })();
+    </script>
+</body>
+</html>
