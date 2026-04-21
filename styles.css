@@ -140,12 +140,12 @@
 --primary: #76C8F2;
   --secondary: #92C96B;
   --accent: #FFF233;
-  --bg-light: #FF99CC;
+  --bg-light: #FFFFFF;
   --bg-dark: #2E2A26;
   --text-dark: #4A4A4A;
   --text-light: #FCFBF8;
-  --text-muted: #000000;
-  --border-light: #FFFFFF;
+  --text-muted: #5a5a5a;
+  --border-light: #808080;
   --border-dark: #7d7772;
   --nav-bg: #FFC0E0;
   --nav-text: #1a1a1a;
@@ -180,10 +180,10 @@
   --primary-color: #76C8F2;
   --secondary-color: #92C96B;
   --accent-color: #FFF233;
-  --background-color: #FF99CC;
-  --surface-color: #FFFFFF;
+  --background-color: #FFFFFF;
+  --surface-color: #FFC0E0;
   --text-color: #4A4A4A;
-  --text-secondary-color: #000000;
+  --text-secondary-color: #5a5a5a;
 }
 
 *,
@@ -527,7 +527,7 @@ hr {
 }
 
 .card {
-  background: #FFFFFF;
+  background: #FFC0E0;
   border-radius: var(--radius-card);
   padding: var(--spacing-card-padding);
   box-shadow: var(--shadow-card);
@@ -726,12 +726,12 @@ hr {
   --primary: #76C8F2;
   --secondary: #92C96B;
   --accent: #FFF233;
-  --bg-light: #FF99CC;
+  --bg-light: #FFFFFF;
   --bg-dark: #2E2A26;
   --text-dark: #4A4A4A;
   --text-light: #FCFBF8;
-  --text-muted: #000000;
-  --border-light: #FFFFFF;
+  --text-muted: #5a5a5a;
+  --border-light: #808080;
   --border-dark: #7d7772;
 }
 
@@ -985,12 +985,12 @@ hr {
   --primary: #76C8F2;
   --secondary: #92C96B;
   --accent: #FFF233;
-  --bg-light: #FF99CC;
+  --bg-light: #FFFFFF;
   --bg-dark: #2E2A26;
   --text-dark: #4A4A4A;
   --text-light: #FCFBF8;
-  --text-muted: #000000;
-  --border-light: #FFFFFF;
+  --text-muted: #5a5a5a;
+  --border-light: #808080;
   --border-dark: #7d7772;
 }
 
@@ -2147,12 +2147,12 @@ main { margin-top: 0 !important; padding-top: 0 !important; }
   --primary: #76C8F2;
   --secondary: #92C96B;
   --accent: #FFF233;
-  --bg-light: #FF99CC;
+  --bg-light: #FFFFFF;
   --bg-dark: #2E2A26;
   --text-dark: #4A4A4A;
   --text-light: #FCFBF8;
-  --text-muted: #000000;
-  --border-light: #FFFFFF;
+  --text-muted: #5a5a5a;
+  --border-light: #808080;
   --border-dark: #7d7772;
   --footer-bg: #1E1B18;
   --footer-surface: #2E2A26;
@@ -13002,6 +13002,12 @@ nav.navbar .sub-menu li a:hover { color: #284f69 !important; background-color: r
   }
 }
 /* === NAVBAR STYLE OVERRIDES END === */
+
+
+
+
+
+
 
 
 /* === BUTTON TEXT OVERRIDES START === */
