@@ -836,14 +836,14 @@
 </script>
   
   <main>
-    <section class="index-hero-section" data-layout-spec="בית-hero" dir="rtl" data-hero-type="fullscreen-scrim" id="index-hero-section" data-zappy-bg-type="image" data-zappy-bg-color="" data-zappy-bg-image="assets/site-index-hero-image-1.webp" data-zappy-bg-overlay-color="#141e37" data-zappy-bg-overlay-opacity="82" data-zappy-bg-video-type="" data-zappy-bg-video-url="">
+    <section class="index-hero-section" data-layout-spec="בית-hero" dir="rtl" data-hero-type="fullscreen-scrim" id="index-hero-section" data-zappy-bg-type="image" data-zappy-bg-color="" data-zappy-bg-image="assets/site-index-hero-image-1.webp" data-zappy-bg-overlay-color="#141e37" data-zappy-bg-overlay-opacity="64" data-zappy-bg-video-type="" data-zappy-bg-video-url="" style="position: relative; overflow: hidden; background-image: url(&quot;assets/site-index-hero-image-1.webp&quot;) !important; background-size: cover !important; background-position: 47% 87% !important; background-repeat: no-repeat; --zappy-bg-overlay: rgba(20, 30, 55, 0.64); --zappy-bg-image: url(&quot;assets/site-index-hero-image-1.webp&quot;); " data-element-id="zappy-hero-bg-index-hero-section" data-element-type="background-image" data-zappy-bg-position="47% 87%" data-zappy-bg-zoom="1">
   <!-- Background Image -->
-  <div class="index-hero-bg">
+  <div class="index-hero-bg" style="display: none" data-zappy-original-bg="hidden">
     <img data-hero-bg="true" data-placeholder="index-hero-image-1" data-context="A bright, warm storybook-classroom scene photographed in natural daylight: a collection of colorful Hebrew beginner reading booklets with illustrated covers arranged on a light wooden table, surrounded by pastel stationery items like pencils, crayons, a small ruler, and soft alphabet tiles. The atmosphere is calm, inviting, and educational — evoking a cozy kindergarten or first-grade classroom setting. Soft bokeh background, warm pastel tones of sky blue, yellow, and green, with a dreamy storybook quality." width="1400" height="800" src="/assets/site-index-hero-image-1.webp" alt="ספרוני קריאה לכיתה א על שולחן עץ עם ציוד לימוד צבעוני" data-hero-background="true" data-element-type="image" data-element-id="img-1776772300449-kiurd6k23">
   </div>
 
   <!-- Scrim Overlay -->
-  <div class="index-hero-scrim" aria-hidden="true" style="opacity: 1"></div>
+  <div class="index-hero-scrim" aria-hidden="true" style="opacity: 1; display: none" data-zappy-original-bg="hidden"></div>
 
   <!-- Content -->
   <div class="index-hero-container">
@@ -854,11 +854,11 @@
 
       <h3 class="index-hero-h3">שיטת קריאה הדרגתית לפי צלילי הניקוד,<br>מותאמת לגנים ולכיתות א׳–ב׳</h3>
 
-      <p class="index-hero-body" style="">סדרת ספרוני ראשית הקריאה של <strong>צליל התנועה</strong> בנויה שלב אחר שלב, לפי התקדמות הדרגתית מובנית. הילדים רוכשים ביטחון בקריאה בצורה שמחה, ברורה ומותאמת לגילם.</p>
+      <p class="index-hero-body" >סדרת ספרוני ראשית הקריאה של <strong>צליל התנועה</strong> בנויה שלב אחר שלב, לפי התקדמות הדרגתית מובנית. הילדים רוכשים ביטחון בקריאה בצורה שמחה, ברורה ומותאמת לגילם.</p>
 
       <div class="index-hero-ctas">
-        <a href="/contact" class="btn-primary index-hero-btn-primary" data-element-type="button" data-element-id="btn-1776772300443-3jaqbwb8d" data-native-element="true">צרו קשר</a>
-        <a href="/method" class="index-hero-btn-secondary btn btn-outline btn-secondary" data-element-type="button" data-element-id="btn-1776772300443-y1g6dbb3p" data-native-element="true" style="outline: none; color: rgb(255, 255, 0) !important; border-color: var(--light-text, #ffffff) !important; background-color: transparent !important; background-image: none !important;" data-text-color="#ffff00">השיטה שלנו</a>
+        <a href="/contact" class="index-hero-btn-primary btn btn-primary" data-element-type="button" data-element-id="btn-1776772300443-3jaqbwb8d" data-native-element="true" style="outline: none; border-color: transparent !important; color: var(--light-text, #ffffff) !important; background-color: transparent !important; background-image: linear-gradient(135deg, rgb(255, 244, 87), rgb(255, 241, 30)) !important;" data-text-color="light">צרו קשר</a>
+        <a href="/method" class="index-hero-btn-secondary btn btn-outline btn-secondary" data-element-type="button" data-element-id="btn-1776772300443-y1g6dbb3p" data-native-element="true" style="outline: none; color: rgb(0, 0, 0) !important; border-color: rgb(255, 255, 0) !important; background-color: transparent !important; background-image: none !important;" data-text-color="#000000">השיטה שלנו</a>
       </div>
     </div>
   </div>
@@ -873,12 +873,10 @@
 
     <section class="featured-products-section" id="featured-products" data-zappy-dynamic="true">
       <div class="container">
-        <h2 class="section-title">מוצרים מומלצים</h2>
-        <div class="product-grid featured-grid" id="zappy-featured-products">
-          <div class="loading-products">טוען מוצרים...</div>
-        </div>
+        
+        <div class="product-grid featured-grid" id="zappy-featured-products"><div class="no-featured-products">עוד לא נבחרו מוצרים מומלצים. צפו בכל המוצרים שלנו!</div></div>
         <div class="view-all-products">
-          <a href="/products" class="btn btn-primary">צפה בכל המוצרים →</a>
+          <a href="/products" class="btn btn-primary" data-element-type="button" data-element-id="btn-1776773709730-lmfrd7kl1" data-native-element="true">צפה בכל המוצרים →</a>
         </div>
       </div>
     </section>
